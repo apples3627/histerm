@@ -1,9 +1,36 @@
 from __future__ import annotations
 
+import curses
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 from histerm.tui import HistermUI
+
+
+class FakeWindow:
+    def __init__(self, height: int = 24, width: int = 80) -> None:
+        self.height = height
+        self.width = width
+        self.calls: list[tuple[int, int, str]] = []
+
+    def getmaxyx(self) -> tuple[int, int]:
+        return self.height, self.width
+
+    def erase(self) -> None:
+        return None
+
+    def refresh(self) -> None:
+        return None
+
+    def derwin(self, height: int, width: int, start_y: int, start_x: int) -> "FakeWindow":
+        return self
+
+    def box(self) -> None:
+        return None
+
+    def addstr(self, y: int, x: int, text: str, attr: int | None = None) -> None:
+        self.calls.append((y, x, text))
 
 
 class FavoriteUITests(unittest.TestCase):
@@ -38,3 +65,12 @@ class FavoriteUITests(unittest.TestCase):
         removed = ui.delete_selected_favorite()
         self.assertEqual(removed, "mkdir B")
         self.assertEqual(ui.favorite_commands, ["cd A"])
+
+    def test_draw_shows_favorites_tab_label(self) -> None:
+        ui = self.build_ui()
+        screen = FakeWindow()
+        with patch.object(curses, "has_colors", return_value=False):
+            ui.draw(screen)
+
+        labels = [text for _, _, text in screen.calls]
+        self.assertIn(" Favorites ", labels)

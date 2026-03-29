@@ -43,7 +43,30 @@ curl -fsSL https://raw.githubusercontent.com/apples3627/histerm/main/install.sh 
 
 The installer uses `pipx`, installs it first if needed, and adds shell integration for the detected shell.
 
-### 2. Add shell integration
+### 2. Update
+
+Existing users need to update to see the new `Favorites` tab.
+
+If you installed with `pipx`:
+
+```bash
+pipx install --force git+https://github.com/apples3627/histerm.git
+```
+
+If you used the installer script:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/apples3627/histerm/main/install.sh | bash
+```
+
+If you are running from a local clone:
+
+```bash
+git pull
+python3 -m pip install -e .
+```
+
+### 3. Add shell integration
 
 For `zsh`, add this to `~/.zshrc`:
 
@@ -61,7 +84,7 @@ By default the widget is bound to `Ctrl-R`.
 
 For `zsh`, after loading the integration, you can also run plain `histerm` and the selected command will be inserted into the next prompt instead of printed.
 
-### 3. Reload your shell
+### 4. Reload your shell
 
 ```bash
 source ~/.zshrc
@@ -96,6 +119,12 @@ histerm --history-file ~/.zsh_history
 histerm --dedupe-recent
 histerm init zsh
 ```
+
+## What's New in 0.2.0
+
+- Added a third `Favorites` tab next to `Recent` and `Frequent`
+- Save your own shortcut commands such as `cd A` and `mkdir B`
+- Press `a` to add a favorite, `d` to delete it, and `Enter` to insert it back into the current prompt
 
 ## Configuration
 
