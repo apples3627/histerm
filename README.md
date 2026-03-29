@@ -2,10 +2,11 @@
 
 `histerm` is a lightweight terminal popup for shell history.
 
-It reads your shell history file, shows a centered TUI with two tabs:
+It reads your shell history file, shows a centered TUI with three tabs:
 
 - `Recent`: your latest commands
 - `Frequent`: the commands you use most often
+- `Favorites`: your saved shortcut commands such as `cd ~/work` or `mkdir tmp`
 
 You move with the arrow keys, press `Enter`, and the selected command is placed back into your current shell prompt.
 
@@ -14,8 +15,9 @@ You move with the arrow keys, press `Enter`, and the selected command is placed 
 - Popup-style terminal UI built with the Python standard library
 - No third-party runtime dependencies
 - `zsh` and `bash` shell integration
-- Default list size of `10`, configurable by CLI flag or config file
+- Default list size of `10` for history tabs, configurable by CLI flag or config file
 - Frequency tab groups by the main command name and inserts the latest matching full command
+- Favorites tab lets you save your own commands and reinsert them with `Enter`
 
 ## Quick Start
 
@@ -41,7 +43,30 @@ curl -fsSL https://raw.githubusercontent.com/apples3627/histerm/main/install.sh 
 
 The installer uses `pipx`, installs it first if needed, and adds shell integration for the detected shell.
 
-### 2. Add shell integration
+### 2. Update
+
+Existing users need to update to see the new `Favorites` tab.
+
+If you installed with `pipx`:
+
+```bash
+pipx install --force git+https://github.com/apples3627/histerm.git
+```
+
+If you used the installer script:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/apples3627/histerm/main/install.sh | bash
+```
+
+If you are running from a local clone:
+
+```bash
+git pull
+python3 -m pip install -e .
+```
+
+### 3. Add shell integration
 
 For `zsh`, add this to `~/.zshrc`:
 
@@ -59,7 +84,7 @@ By default the widget is bound to `Ctrl-R`.
 
 For `zsh`, after loading the integration, you can also run plain `histerm` and the selected command will be inserted into the next prompt instead of printed.
 
-### 3. Reload your shell
+### 4. Reload your shell
 
 ```bash
 source ~/.zshrc
@@ -89,10 +114,17 @@ Useful options:
 ```bash
 histerm --limit 20
 histerm --tab frequent
+histerm --tab favorites
 histerm --history-file ~/.zsh_history
 histerm --dedupe-recent
 histerm init zsh
 ```
+
+## What's New in 0.2.0
+
+- Added a third `Favorites` tab next to `Recent` and `Frequent`
+- Save your own shortcut commands such as `cd A` and `mkdir B`
+- Press `a` to add a favorite, `d` to delete it, and `Enter` to insert it back into the current prompt
 
 ## Configuration
 
@@ -107,17 +139,24 @@ Example:
   "limit": 15,
   "initial_tab": "frequent",
   "scan_limit": 8000,
-  "dedupe_recent": true
+  "dedupe_recent": true,
+  "favorites": [
+    "cd ~/work/project-a",
+    "mkdir ~/tmp/demo"
+  ]
 }
 ```
 
 Supported keys:
 
-- `limit`: number of items shown per tab
-- `initial_tab`: `recent` or `frequent`
+- `limit`: number of items shown in the `recent` and `frequent` tabs
+- `initial_tab`: `recent`, `frequent`, or `favorites`
+- `favorites`: saved commands shown in the favorites tab
 - `history_file`: explicit history file path
 - `scan_limit`: maximum parsed history entries
 - `dedupe_recent`: hide duplicate commands in the recent tab
+
+The favorites tab also writes back to the same config file when you add or delete entries inside the TUI.
 
 CLI flags override config values.
 
@@ -127,6 +166,8 @@ CLI flags override config values.
 - `Left` / `Right`: switch tabs
 - `Tab`: switch tabs
 - `Enter`: choose command
+- `a`: add a favorite command when the favorites tab is open
+- `d`: delete the selected favorite command when the favorites tab is open
 - `q` or `Esc`: close
 
 ## Shell Integration Notes
