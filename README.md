@@ -21,27 +21,43 @@ You move with the arrow keys, press `Enter`, and the selected command is placed 
 
 ### 1. Install
 
+Recommended with `pipx`:
+
 ```bash
-python3 -m pip install -e .
+pipx install git+https://github.com/apples3627/histerm.git
 ```
+
+If `histerm` is not found after install, run:
+
+```bash
+pipx ensurepath
+```
+
+Optional one-line installer:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/apples3627/histerm/main/install.sh | bash
+```
+
+The installer uses `pipx`, installs it first if needed, and adds shell integration for the detected shell.
 
 ### 2. Add shell integration
 
 For `zsh`, add this to `~/.zshrc`:
 
 ```bash
-source /path/to/histerm/shell/histerm.zsh
+echo 'source <(histerm init zsh)' >> ~/.zshrc
 ```
 
 For `bash`, add this to `~/.bashrc`:
 
 ```bash
-source /path/to/histerm/shell/histerm.bash
+echo 'source <(histerm init bash)' >> ~/.bashrc
 ```
 
 By default the widget is bound to `Ctrl-R`.
 
-For `zsh`, after sourcing the integration file, you can also run plain `histerm` and the selected command will be inserted into the next prompt instead of printed.
+For `zsh`, after loading the integration, you can also run plain `histerm` and the selected command will be inserted into the next prompt instead of printed.
 
 ### 3. Reload your shell
 
@@ -75,6 +91,7 @@ histerm --limit 20
 histerm --tab frequent
 histerm --history-file ~/.zsh_history
 histerm --dedupe-recent
+histerm init zsh
 ```
 
 ## Configuration
@@ -122,9 +139,21 @@ An external program cannot reliably modify the current shell input buffer by its
 
 This keeps the UI stable and works well for interactive terminal use.
 
-In `zsh`, the integration file also defines a small shell wrapper so typing `histerm` with no arguments pushes the selected command into the next editable prompt. In `bash`, prompt insertion remains bound to `Ctrl-R` because readline buffer editing is most reliable from a key binding.
+In `zsh`, the integration also defines a small shell wrapper so typing `histerm` with no arguments pushes the selected command into the next editable prompt. In `bash`, prompt insertion remains bound to `Ctrl-R` because readline buffer editing is most reliable from a key binding.
+
+## Install Notes
+
+- `pipx` is the recommended installation path for end users.
+- `histerm init zsh` and `histerm init bash` print the integration script so your shell can source it without depending on the cloned repository path.
+- The `curl` installer is optional convenience on top of the same `pipx` flow.
 
 ## Development
+
+Local editable install:
+
+```bash
+python3 -m pip install -e .
+```
 
 Run tests:
 

@@ -13,11 +13,15 @@ from histerm.history import (
     recent_entries,
     resolve_history_file,
 )
+from histerm.integration import SUPPORTED_SHELLS, load_shell_integration
 from histerm.tui import HistermUI
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Popup shell history picker")
+def build_picker_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        description="Popup shell history picker",
+        epilog="Shell integration: histerm init {bash,zsh}",
+    )
     parser.add_argument("--config", type=Path, help="Path to config JSON file")
     parser.add_argument("--no-config", action="store_true", help="Ignore config file")
     parser.add_argument("--limit", type=int, help="Number of items per tab")
@@ -38,8 +42,17 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: list[str] | None = None) -> int:
-    parser = build_parser()
+def build_init_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="histerm init",
+        description="Print shell integration for histerm",
+    )
+    parser.add_argument("shell", choices=sorted(SUPPORTED_SHELLS))
+    return parser
+
+
+def run_picker(argv: list[str]) -> int:
+    parser = build_picker_parser()
     args = parser.parse_args(argv)
 
     config = (
@@ -80,3 +93,17 @@ def main(argv: list[str] | None = None) -> int:
     else:
         print(selected)
     return 0
+
+
+def run_init(argv: list[str]) -> int:
+    parser = build_init_parser()
+    args = parser.parse_args(argv)
+    sys.stdout.write(load_shell_integration(args.shell))
+    return 0
+
+
+def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "init":
+        return run_init(argv[1:])
+    return run_picker(argv)

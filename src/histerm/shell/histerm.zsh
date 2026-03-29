@@ -1,7 +1,3 @@
-# Load this file from ~/.zshrc
-# Example:
-#   source /path/to/histerm/shell/histerm.zsh
-
 typeset -g HISTERM_SELECTION=""
 
 function _histerm_pick() {
@@ -61,3 +57,4 @@ function histerm() {
 
 zle -N histerm-widget _histerm_widget
 bindkey '^R' histerm-widget
+

@@ -27,3 +27,5 @@ histerm = "histerm.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+histerm = ["shell/*.bash", "shell/*.zsh"]
