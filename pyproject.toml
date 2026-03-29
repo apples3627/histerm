@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "histerm"
+version = "0.1.0"
+description = "Popup terminal history chooser for Linux shells"
+readme = "README.md"
+requires-python = ">=3.11"
+keywords = ["terminal", "history", "tui", "shell", "linux"]
+classifiers = [
+  "Environment :: Console",
+  "Operating System :: POSIX :: Linux",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Terminals",
+  "Topic :: Utilities",
+]
+
+[project.scripts]
+histerm = "histerm.cli:main"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
