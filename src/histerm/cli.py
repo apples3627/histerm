@@ -5,7 +5,7 @@ import curses
 from pathlib import Path
 import sys
 
-from histerm.config import DEFAULT_CONFIG_PATH, HistermConfig, load_config
+from histerm.config import DEFAULT_CONFIG_PATH, HistermConfig, load_config, save_favorites
 from histerm.history import (
     detect_shell,
     frequent_entries,
@@ -25,7 +25,11 @@ def build_picker_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", type=Path, help="Path to config JSON file")
     parser.add_argument("--no-config", action="store_true", help="Ignore config file")
     parser.add_argument("--limit", type=int, help="Number of items per tab")
-    parser.add_argument("--tab", choices=["recent", "frequent"], help="Initial tab")
+    parser.add_argument(
+        "--tab",
+        choices=["recent", "frequent", "favorites"],
+        help="Initial tab",
+    )
     parser.add_argument("--shell", choices=["zsh", "bash"], help="History format to parse")
     parser.add_argument("--history-file", help="Explicit history file path")
     parser.add_argument("--scan-limit", type=int, help="Maximum parsed history entries")
@@ -55,11 +59,8 @@ def run_picker(argv: list[str]) -> int:
     parser = build_picker_parser()
     args = parser.parse_args(argv)
 
-    config = (
-        HistermConfig()
-        if args.no_config
-        else load_config(args.config or DEFAULT_CONFIG_PATH)
-    )
+    config_path = None if args.no_config else args.config or DEFAULT_CONFIG_PATH
+    config = HistermConfig() if args.no_config else load_config(config_path)
 
     limit = args.limit if args.limit and args.limit > 0 else config.limit
     initial_tab = args.tab or config.initial_tab
@@ -76,8 +77,13 @@ def run_picker(argv: list[str]) -> int:
     ui = HistermUI(
         recent,
         frequent,
+        favorites=config.favorites,
         initial_tab=initial_tab,
         history_file=history_file,
+        config_file=config_path,
+        save_favorites_callback=(
+            None if config_path is None else lambda favorites: save_favorites(favorites, config_path)
+        ),
     )
     try:
         selected = curses.wrapper(ui.run)
